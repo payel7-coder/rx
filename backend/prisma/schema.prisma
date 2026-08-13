@@ -1,87 +1,15 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  passwordHash String
-  role         Role
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  prescriptions Prescription[] @relation("prescriber")
-}
-
-enum Role {
-  ADMIN
-  DOCTOR
-  PHARMACIST
-  PATIENT
-}
-
-model Patient {
-  id        String   @id @default(uuid())
-  firstName String
-  lastName  String
-  dob       DateTime
-  mrn       String?  @unique
-  phone     String?
-  email     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  prescriptions Prescription[]
-}
-
-model Medication {
-  id       String @id @default(uuid())
-  name     String
-  ndc      String? @unique
-  strength String?
-  form     String?
-}
-
-model Prescription {
-  id            String   @id @default(uuid())
-  patient       Patient  @relation(fields: [patientId], references: [id])
-  patientId     String
-  prescriber    User     @relation("prescriber", fields: [prescriberId], references: [id])
-  prescriberId  String
-  medication    Medication @relation(fields: [medicationId], references: [id])
-  medicationId  String
-  dosage        String
-  frequency     String
-  quantity      Int
-  refills       Int      @default(0)
-  status        PrescStatus @default(ISSUED)
-  issuedAt      DateTime @default(now())
-  expiresAt     DateTime?
-  notes         String?
-  attachmentUrl String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  events        PrescriptionEvent[]
-}
-
-enum PrescStatus {
-  ISSUED
-  ACTIVE
-  DISPENSED
-  COMPLETED
-  REVOKED
-}
-
-model PrescriptionEvent {
-  id             String   @id @default(uuid())
-  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
-  prescriptionId String
-  actor          User     @relation(fields: [actorId], references: [id])
-  actorId        String
-  action         String
-  detail         String?
-  createdAt      DateTime @default(now())
-}
+diff --git a/backend/prisma/schema.prisma b/backend/prisma/schema.prisma
+index 0000000..0000000 100644
+--- a/backend/prisma/schema.prisma
++++ b/backend/prisma/schema.prisma
+@@
+ model User {
+   id           String   @id @default(uuid())
+   email        String   @unique
+   passwordHash String
++  refreshToken String?
+   role         Role
+   createdAt    DateTime @default(now())
+   updatedAt    DateTime @updatedAt
+   prescriptions Prescription[] @relation("prescriber")
+ }
